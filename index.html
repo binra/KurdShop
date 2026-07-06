@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ku">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KurdShop</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        <img src="images/logo.png" alt="Logo">
+        <h1>KurdShop</h1>
+    </div>
+
+    <div class="search">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="گەڕان بۆ کاڵا..."
+        >
+    </div>
+
+    <div class="cart">
+        🛒 <span id="cart-count">0</span>
+    </div>
+
+</header>
+
+<nav class="menu">
+
+<a href="#" data-filter="all">هەموو</a>
+
+<a href="#" data-filter="مۆبایل">📱 مۆبایل</a>
+
+<a href="#" data-filter="کۆمپیوتەر">💻 کۆمپیوتەر</a>
+
+<a href="#" data-filter="کاتژمێر">⌚ کاتژمێر</a>
+
+<a href="#" data-filter="ئامێری دەنگ">🎧 ئامێری دەنگ</a>
+
+<a href="#" data-filter="جلوبەرگ">👕 جلوبەرگ</a>
+
+</nav>
+
+<section class="hero">
+
+<h2>بەخێربێیت بۆ KurdShop</h2>
+
+<p>باشترین کاڵاکان بە باشترین نرخ</p>
+
+</section>
+
+<main>
+
+<div id="products" class="products">
+
+</div>
+
+</main>
+
+<section class="cart-box">
+
+<h2>🛒 سەبەتی کڕین</h2>
+
+<ul id="cart-items"></ul>
+
+<h3>
+
+کۆی گشتی:
+
+$
+
+<span id="total-price">
+
+0
+
+</span>
+
+</h3>
+
+</section>
+
+<footer>
+
+<p>
+
+© 2026 KurdShop
+
+</p>
+
+</footer>
+
+<script type="module" src="script.js"></script>
+
+</body>
+
+</html>

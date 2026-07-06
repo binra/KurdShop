@@ -1,0 +1,154 @@
+import { db } from "./firebase.js";
+
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const productsContainer = document.getElementById("products");
+
+async function loadProducts() {
+
+    productsContainer.innerHTML = "";
+
+    const snapshot = await getDocs(collection(db, "products"));
+
+    snapshot.forEach((product) => {
+
+        const data = product.data();
+
+        productsContainer.innerHTML += `
+            <div class="product" data-category="${data.category}">
+
+                <div class="favorite">♡</div>
+
+                <img src="${data.image}" alt="${data.title}">
+
+                <h2>${data.title}</h2>
+
+                <p>$${data.price}</p>
+
+                <button class="add-cart">
+                    Add To Cart
+                </button>
+
+            </div>
+        `;
+
+    });
+
+}
+
+loadProducts();
+// Search
+
+const searchInput = document.getElementById("searchInput");
+
+searchInput.addEventListener("keyup", () => {
+
+    const value = searchInput.value.toLowerCase();
+
+    document.querySelectorAll(".product").forEach(product => {
+
+        const title = product.querySelector("h2").textContent.toLowerCase();
+
+        if (title.includes(value)) {
+            product.style.display = "block";
+        } else {
+            product.style.display = "none";
+        }
+
+    });
+
+});
+// Shopping Cart
+
+let count = 0;
+let total = 0;
+
+const cartCount = document.getElementById("cart-count");
+const cartItems = document.getElementById("cart-items");
+const totalPrice = document.getElementById("total-price");
+
+function activateCart() {
+
+    document.querySelectorAll(".add-cart").forEach(button => {
+
+        button.onclick = () => {
+
+            const product = button.parentElement;
+
+            const name = product.querySelector("h2").textContent;
+
+            const price = parseInt(
+                product.querySelector("p").textContent.replace("$","")
+            );
+
+            count++;
+            total += price;
+
+            cartCount.textContent = count;
+            totalPrice.textContent = total;
+
+            const li = document.createElement("li");
+
+            li.innerHTML = `
+                ${name} - $${price}
+                <button>❌</button>
+            `;
+
+            li.querySelector("button").onclick = () => {
+
+                li.remove();
+
+                count--;
+                total -= price;
+
+                cartCount.textContent = count;
+                totalPrice.textContent = total;
+
+            };
+
+            cartItems.appendChild(li);
+
+        };
+
+    });
+
+}
+// Category Filter
+
+function activateCategoryFilter() {
+
+    const filters = document.querySelectorAll(".menu a");
+
+    filters.forEach(filter => {
+
+        filter.onclick = (e) => {
+
+            e.preventDefault();
+
+            const category = filter.dataset.filter;
+
+            document.querySelectorAll(".product").forEach(product => {
+
+                if (
+                    category === "all" ||
+                    product.dataset.category === category
+                ) {
+
+                    product.style.display = "block";
+
+                } else {
+
+                    product.style.display = "none";
+
+                }
+
+            });
+
+        };
+
+    });
+
+}
