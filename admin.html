@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - KurdShop</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <a href="index.html">
+        <img src="images/logo.png" class="logo" alt="Logo">
+    </a>
+
+    <h1>Admin Panel</h1>
+</header>
+
+<main class="admin-page">
+
+    <h2>Add New Product</h2>
+
+    <input type="hidden" id="productId">
+    
+    <form id="productForm">
+
+        <input
+            type="text"
+            id="title"
+            placeholder="Product Name"
+            required
+        >
+
+        <input
+            type="number"
+            id="price"
+            placeholder="Price"
+            required
+        >
+
+        <input
+            type="text"
+            id="image"
+            placeholder="Image Path"
+            required
+        >
+
+        <input
+            type="text"
+            id="category"
+            placeholder="Category"
+            required
+        >
+
+        <input
+            type="text"
+            id="link"
+            placeholder="Product Link"
+        >
+
+        <textarea
+            id="description"
+            placeholder="Description"
+            rows="5"
+        ></textarea>
+
+        <button type="submit">
+            Add Product
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Products</h2>
+
+    <div id="adminProducts"></div>
+
+</main>
+
+<script type="module" src="admin.js"></script>
+
+</body>
+</html>
