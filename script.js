@@ -25,6 +25,7 @@ activateCategoryFilter();
 renderCart();
 
 }
+
         const data = product.data();
 
         productsContainer.innerHTML += `
@@ -45,12 +46,9 @@ renderCart();
                 </button>
 
             </div>
+
         `;
-
-    });
-
- }
-
+    
 loadProducts();
 // Search
 
@@ -136,7 +134,7 @@ function activateCart() {
             const name = product.querySelector("h2").textContent;
 
             const price = parseInt(
-                product.querySelector("p").textContent.replace("$","")
+                product.querySelector("p").textContent.replace("$", "")
             );
 
       cart.push({
@@ -146,6 +144,12 @@ function activateCart() {
 
 saveCart();
 renderCart();
+
+        };
+
+    });
+
+}
   
 // Category Filter
 
