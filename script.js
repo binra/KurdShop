@@ -13,22 +13,7 @@ async function loadProducts() {
 
     const snapshot = await getDocs(collection(db, "products"));
 
-    console.log(snapshot.size)
-
     snapshot.forEach((product) => {
-
-    // ...
-
-});
-
-activateCart();
-// activateFavorites();
-activateCategoryFilter();
-renderCart();
-
-}
-
-
 
         const data = product.data();
 
@@ -38,8 +23,8 @@ renderCart();
                 <div class="favorite">♡</div>
 
                 <a href="product.html?id=${product.id}">
-    <img src="${data.image}" alt="${data.title}">
-</a>
+                    <img src="${data.image}" alt="${data.title}">
+                </a>
 
                 <h2>${data.title}</h2>
 
@@ -50,9 +35,16 @@ renderCart();
                 </button>
 
             </div>
-
         `;
-    
+
+    });
+
+    activateCart();
+    activateCategoryFilter();
+    renderCart();
+
+}
+
 loadProducts();
 // Search
 
