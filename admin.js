@@ -107,6 +107,13 @@ async function loadProducts() {
 
     <br><br>
 
+    <button class="delete-btn" data-id="${product.id}">
+        Delete
+    </button>
+
+    <button class="edit-btn" data-id="${product.id}">
+        Edit
+    </button>
 
 </div>
 
