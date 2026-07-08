@@ -2,7 +2,8 @@ import { db } from "./firebase.js";
 
 import {
   collection,
-  getDocs
+  getDocs,
+  addDoc
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const productsContainer = document.getElementById("products");
@@ -183,3 +184,32 @@ function activateCategoryFilter() {
     });
 
 }
+const checkoutBtn = document.getElementById("checkout-btn");
+
+checkoutBtn.onclick = async () => {
+
+    if (cart.length === 0) {
+
+        alert("سەبەتی کڕین بەتاڵە");
+
+        return;
+
+    }
+
+    await addDoc(collection(db, "orders"), {
+
+        items: cart,
+        total: cart.reduce((sum, item) => sum + item.price, 0),
+        createdAt: new Date().toISOString()
+
+    });
+
+    alert("داواکارییەکەت بە سەرکەوتوویی نێردرا ✅");
+
+    cart = [];
+
+    saveCart();
+
+    renderCart();
+
+};
