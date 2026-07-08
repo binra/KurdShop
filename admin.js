@@ -1,13 +1,3 @@
-const password = prompt("Enter Admin Password");
-
-if (password !== "9NG5Y0FRQEG") {
-
-    alert("Access Denied");
-
-    window.location.href = "index.html";
-
-}
-
 import { db } from "./firebase.js";
 import {
     collection,
@@ -18,6 +8,12 @@ import {
     doc
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
+const password = prompt("Enter Admin Password");
+
+if (password !== "9NG5Y0FRQEG") {
+    alert("Access Denied");
+    window.location.href = "index.html";
+}
 
 const form = document.getElementById("productForm");
 const adminProducts = document.getElementById("adminProducts");
