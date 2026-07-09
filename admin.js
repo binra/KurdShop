@@ -178,3 +178,56 @@ document.querySelectorAll(".edit-btn").forEach(button => {
 }
 
 loadProducts();
+
+async function loadOrders() {
+
+    ordersList.innerHTML = "";
+
+    const q = query(
+        collection(db, "orders"),
+        orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    snapshot.forEach((order) => {
+
+        const data = order.data();
+
+        let items = "";
+
+        if (data.items) {
+
+            data.items.forEach(item => {
+
+                items += `
+                    <li>${item.name} - $${item.price}</li>
+                `;
+
+            });
+
+        }
+
+        ordersList.innerHTML += `
+
+            <div class="product">
+
+                <h3>Order</h3>
+
+                <ul>
+                    ${items}
+                </ul>
+
+                <p><strong>Total:</strong> $${data.total || 0}</p>
+
+                <small>${data.createdAt}</small>
+
+            </div>
+
+        `;
+
+    });
+
+}
+
+loadOrders();
