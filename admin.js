@@ -200,9 +200,7 @@ async function loadOrders() {
 
             data.items.forEach(item => {
 
-                items += `
-                    <li>${item.name} - $${item.price}</li>
-                `;
+                items += `<li>${item.name} - $${item.price}</li>`;
 
             });
 
@@ -214,11 +212,9 @@ async function loadOrders() {
 
                 <h3>Order</h3>
 
-                <ul>
-                    ${items}
-                </ul>
+                <ul>${items}</ul>
 
-                <p><strong>Total:</strong> $${data.total || 0}</p>
+                <p><strong>Total:</strong> $${data.total}</p>
 
                 <small>${data.createdAt}</small>
 
