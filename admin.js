@@ -211,6 +211,10 @@ async function loadOrders() {
             <div class="product">
         <h3>🛒 New Order</h3>
 
+        <button class="complete-btn" data-id="${order.id}">
+            ✅ Completed
+        </button>
+
                 <p><strong>👤 Name:</strong> ${data.customerName}</p>
 
                 <p><strong>📞 Phone:</strong> ${data.customerPhone}</p>
