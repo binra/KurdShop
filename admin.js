@@ -342,6 +342,7 @@ async function loadDashboard() {
     cancelledOrders.textContent = cancelled;
 
 }
+loadProducts();
 
 loadOrders();
 
