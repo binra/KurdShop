@@ -214,31 +214,31 @@ async function loadOrders() {
         ordersList.innerHTML += `
 
             <div class="product">
-        <h3>ð New Order</h3>
+        <h3> 🛒New Order</h3>
 
         <button class="complete-btn" data-id="${order.id}">
-            â Completed
+            ✅ Completed
         </button>
 
         <button class="cancel-btn" data-id="${order.id}">
-            ð´ Cancel
+            ❌ Cancel
         </button>
 
-                <p><strong>ð¤ Name:</strong> ${data.customerName}</p>
+                <p><strong>👤 Name:</strong> ${data.customerName}</p>
 
-                <p><strong>ð Phone:</strong> ${data.customerPhone}</p>
+                <p><strong>📞 Phone:</strong> ${data.customerPhone}</p>
 
-                <p><strong>ð Address:</strong> ${data.customerAddress}</p>
+                <p><strong>📍 Address:</strong> ${data.customerAddress}</p>
 
                 <hr>
 
                 <ul>${items}</ul>
 
-                <p><strong>ð° Total:</strong> $${data.total}</p>
+                <p><strong>💰 Total:</strong> $${data.total}</p>
 
                 <p><strong>Status:</strong> ${data.status || "Pending"}</p>
 
-                <small>ð ${data.createdAt}</small>
+                <small>⏰ ${data.createdAt}</small>
 
             </div>
 
