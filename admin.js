@@ -327,9 +327,8 @@ async function loadDashboard() {
     completedOrders.textContent = completed;
     cancelledOrders.textContent = cancelled;
 
-
+}
 
 loadOrders();
 
 loadDashboard();
-}
