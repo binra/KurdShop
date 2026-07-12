@@ -135,7 +135,7 @@ async function loadProducts() {
     <p>$${data.price}</p>
 
     <a href="${data.link}" target="_blank">
-        Amazon Link
+        🛒 Buy Now
     </a>
     <small>${data.category}</small>
 
@@ -202,36 +202,7 @@ document.querySelectorAll(".edit-btn").forEach(button => {
 
 }
 
-
-
-
-document.querySelectorAll(".cancel-btn").forEach(button => {
-
-    button.onclick = async () => {
-
-    try {
-
-        await updateDoc(
-            doc(db, "orders", button.dataset.id),
-            {
-                status: "Cancelled"
-            }
-        );
-
-        alert("Cancelled â");
-
-    
-        loadDashboard();
-    } catch (e) {
-
-        alert(e.message);
-
-    }
-
-};
-
-});
-
+loadProducts();
 
 async function loadDashboard() {
 
