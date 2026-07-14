@@ -1,27 +1,29 @@
 import { db, auth } from "./firebase.js";
 
 import {
-    collection,
-    addDoc,
-    getDocs,
-    deleteDoc,
-    updateDoc,
-    doc,
-    getDoc
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  updateDoc,
+  doc,
+  getDoc
+
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 import {
-    signInWithEmailAndPassword
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
+// Login
 const email = prompt("Admin Email");
 const password = prompt("Admin Password");
 
 await signInWithEmailAndPassword(auth, email, password);
 
-
+// Elements
 const form = document.getElementById("productForm");
-const adminProducts = document.getElementById("adminProducts");
+
 
 const title = document.getElementById("title");
 const price = document.getElementById("price");
@@ -34,43 +36,29 @@ const featured = document.getElementById("featured");
 const bestDeal = document.getElementById("bestDeal");
 const newArrival = document.getElementById("newArrival");
 
+const adminProducts = document.getElementById("adminProducts");
+
 let editingId = null;
 
-
-
+// Save Product
 form.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
     const product = {
-
-        title: title.value,
-
+        title: title.value.trim(),
         price: Number(price.value),
+        image: image.value.trim(),
+        category: category.value.trim(),
+        link: link.value.trim(),
+        description: description.value.trim(),
 
-        image: image.value,
-
-        category: category.value,
-
-        link: link.value,
-
-        description: description.value,
-       
         featured: featured.checked,
 
         bestDeal: bestDeal.checked,
-
-        newArrival: newArrival.checked,
+        newArrival: newArrival.checked
     };
-
-
-    if (!product.link) {
-
-        alert("Affiliate Link Required");
-
-        return;
-
-    }
+    
 
     if (editingId) {
 
@@ -79,9 +67,11 @@ form.addEventListener("submit", async (e) => {
             product
         );
 
-        editingId = null;
+    
 
         alert("Updated ✅");
+
+        editingId = null;
 
     } else {
 
@@ -100,51 +90,42 @@ form.addEventListener("submit", async (e) => {
 
 });
 
-
-
+// Load Products
 async function loadProducts() {
 
     adminProducts.innerHTML = "";
 
-    const snapshot = await getDocs(
-        collection(db, "products")
-    );
+    const snapshot = await getDocs(collection(db, "products"));
 
-    snapshot.forEach(product => {
+    snapshot.forEach((productDoc) => {
 
-        const data = product.data();
+        const data = productDoc.data();
 
         adminProducts.innerHTML += `
+        <div class="product">
 
-<div class="product">
+            <img src="${data.image}" alt="">
 
-<img src="${data.image}">
+            <h3>${data.title}</h3>
 
-<h3>${data.title}</h3>
+            <p>$${data.price}</p>
 
-<p>$${data.price}</p>
+            <button class="edit-btn"
+                data-id="${productDoc.id}">
+                Edit
+            </button>
 
-<a href="${data.link}" target="_blank">
-🛒 Buy Now
-</a>
+            <button class="delete-btn"
+                data-id="${productDoc.id}">
+                Delete
+            </button>
 
-<br><br>
-
-<button class="edit-btn"
-data-id="${product.id}">
-Edit
-</button>
-
-<button class="delete-btn"
-data-id="${product.id}">
-Delete
-</button>
-</div>
-
-`;
+        </div>
+        `;
 
     });
 
+    // Delete
     document.querySelectorAll(".delete-btn").forEach(btn => {
 
         btn.onclick = async () => {
@@ -161,6 +142,7 @@ Delete
 
     });
 
+    // Edit
     document.querySelectorAll(".edit-btn").forEach(btn => {
 
         btn.onclick = async () => {
@@ -173,15 +155,21 @@ Delete
 
             const data = snap.data();
 
-            title.value = data.title;
-            price.value = data.price;
-            image.value = data.image;
-            category.value = data.category;
-            link.value = data.link;
-            description.value = data.description;
+            title.value = data.title || "";
+            price.value = data.price || "";
+            image.value = data.image || "";
+            category.value = data.category || "";
+            link.value = data.link || "";
+            description.value = data.description || "";
+
             featured.checked = data.featured || false;
             bestDeal.checked = data.bestDeal || false;
             newArrival.checked = data.newArrival || false;
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
 
         };
 
