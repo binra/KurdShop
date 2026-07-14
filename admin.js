@@ -25,6 +25,7 @@ const adminProducts = document.getElementById("adminProducts");
 const featured = document.getElementById("featured");
 const bestDeal = document.getElementById("bestDeal");
 const newArrival = document.getElementById("newArrival");
+const description = document.getElementById("description");
 let editingId = null;
 
 
