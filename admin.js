@@ -22,15 +22,18 @@ await signInWithEmailAndPassword(auth, email, password);
 
 const form = document.getElementById("productForm");
 const adminProducts = document.getElementById("adminProducts");
-const featured = document.getElementById("featured");
-const bestDeal = document.getElementById("bestDeal");
-const newArrival = document.getElementById("newArrival");
-const description = document.getElementById("description");
+
 const title = document.getElementById("title");
 const price = document.getElementById("price");
 const image = document.getElementById("image");
 const category = document.getElementById("category");
 const link = document.getElementById("link");
+const description = document.getElementById("description");
+
+const featured = document.getElementById("featured");
+const bestDeal = document.getElementById("bestDeal");
+const newArrival = document.getElementById("newArrival");
+
 let editingId = null;
 
 
