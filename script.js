@@ -25,7 +25,7 @@ async function loadProducts() {
 
         if (!container) return;
 
-        Container.innerHTML += `
+        container.innerHTML += `
             <div class="product" data-category="${data.category}">
 
                 <div class="badge">
