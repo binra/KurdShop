@@ -36,7 +36,8 @@ const rating = document.getElementById("rating");
 const reviews = document.getElementById("reviews");
 const featured = document.getElementById("featured");
 const bestDeal = document.getElementById("bestDeal");
-const newArrival = document.getElementById("newArrival");
+const bestSeller = document.getElementById("bestSeller");rival = document.getElementById("newArrival");
+
 
 const adminProducts = document.getElementById("adminProducts");
 
@@ -61,9 +62,11 @@ form.addEventListener("submit", async (e) => {
         featured: featured.checked,
 
         bestDeal: bestDeal.checked,
-        newArrival: newArrival.checked
+        newArrival: newArrival.checked,
+        bestSeller: bestSeller.checked
     };
-    
+
+
 
     if (editingId) {
 
@@ -109,6 +112,11 @@ async function loadProducts() {
         adminProducts.innerHTML += `
         <div class="product">
 
+        ${data.bestSeller ? `
+        <div class="badge">
+        🏆 Best Seller
+        </div>
+        ` : ""}
             <img src="${data.image}" alt="">
 
             <h3>${data.title}</h3>
@@ -172,6 +180,7 @@ async function loadProducts() {
             featured.checked = data.featured || false;
             bestDeal.checked = data.bestDeal || false;
             newArrival.checked = data.newArrival || false;
+            bestSeller.checked = data.bestSeller || false;
 
             window.scrollTo({
                 top: 0,

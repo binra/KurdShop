@@ -37,6 +37,11 @@ async function loadProduct() {
 
             <div class="details">
 
+            ${data.bestSeller ? `
+            <div class="badge">
+            🏆 Best Seller
+            </div>
+            ` : ""}
                 <h1>${data.title}</h1>
 
                 <div class="rating">
