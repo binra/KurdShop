@@ -39,6 +39,15 @@ async function loadProduct() {
 
                 <h1>${data.title}</h1>
 
+                <div class="rating">
+
+                    ⭐ ${data.rating || 0}
+
+                    <span>
+                        (${data.reviews || 0} Reviews)
+                    </span>
+
+                </div>
                 <h2>$${data.price}</h2>
 
                 <p style="color:red;font-size:20px;">
