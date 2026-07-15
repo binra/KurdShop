@@ -36,7 +36,8 @@ const rating = document.getElementById("rating");
 const reviews = document.getElementById("reviews");
 const featured = document.getElementById("featured");
 const bestDeal = document.getElementById("bestDeal");
-const bestSeller = document.getElementById("bestSeller");rival = document.getElementById("newArrival");
+const newArrival = document.getElementById("newArrival");
+const bestSeller = document.getElementById("bestSeller");
 
 
 const adminProducts = document.getElementById("adminProducts");
