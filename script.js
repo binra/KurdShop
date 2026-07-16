@@ -2,15 +2,128 @@ import { db } from "./firebase.js";
 
 import {
     collection,
-    getDocs,
-    addDoc
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
+// ======================
+// Elements
+// ======================
+
 const productsContainer = document.getElementById("products");
+const featuredContainer = document.getElementById("featuredProducts");
+const bestDealsContainer = document.getElementById("bestDeals");
+const newArrivalsContainer = document.getElementById("newArrivals");
 
-async function loadProducts() {
+const searchInput = document.getElementById("searchInput");
 
-    productsContainer.innerHTML = "";
+// ======================
+// Product Card
+// ======================
+
+function productCard(id, data) {
+
+    return `
+
+    <div class="product" data-category="${data.category}" data-id="${id}">
+
+        <div class="badge">
+            🔥 HOT DEAL
+        </div>
+
+        <div class="discount">
+            -30%
+        </div>
+
+        <div class="wishlist">
+            ❤️
+        </div>
+
+        <div class="favorite">
+            ♡
+        </div>
+
+        <a href="product.html?id=${id}">
+
+            <img src="${data.image}" alt="${data.title}">
+
+        </a>
+
+        <h2>${data.title}</h2>
+
+        <div class="rating">
+
+            ⭐ ${data.rating || 0}
+
+            <span>
+
+                (${data.reviews || 0} Reviews)
+
+            </span>
+
+        </div>
+
+        ${data.description ? `
+        <p class="product-desc">
+            ${data.description}
+        </p>
+        ` : ""}
+
+        <p class="price">
+
+            $${data.price}
+
+        </p>
+
+        <p class="shipping">
+
+            🚚 Free Shipping
+
+        </p>
+
+        <a
+            href="${data.link}"
+            target="_blank"
+            class="buy-btn">
+
+            🔥 Get Best Price
+
+        </a>
+
+    </div>
+
+    `;
+
+
+    
+}
+
+// ======================
+// Clear Sections
+// ======================
+
+function clearSections() {
+
+    if (productsContainer)
+        productsContainer.innerHTML = "";
+
+    if (featuredContainer)
+        featuredContainer.innerHTML = "";
+
+    if (bestDealsContainer)
+        bestDealsContainer.innerHTML = "";
+
+    if (newArrivalsContainer)
+        newArrivalsContainer.innerHTML = "";
+
+}
+
+// ======================
+// Load All Products
+// ======================
+
+async function loadAllProducts() {
+
+    clearSections();
 
     const snapshot = await getDocs(collection(db, "products"));
 
@@ -18,241 +131,94 @@ async function loadProducts() {
 
         const data = product.data();
 
+        const card = productCard(product.id, data);
 
         // Featured Products
-        if (data.featured) return;
+        if (data.featured) {
+
+            if (featuredContainer) {
+
+                featuredContainer.innerHTML += card;
+
+            }
+
+        }
 
         // Best Deals
-        if (data.bestDeal) return;
+        if (data.bestDeal) {
+
+            if (bestDealsContainer) {
+
+                bestDealsContainer.innerHTML += card;
+
+            }
+
+        }
 
         // New Arrivals
-        if (data.newArrival) return;
+        if (data.newArrival) {
 
-        const container = document.getElementById("products");
+            if (newArrivalsContainer) {
 
-        if (!container) return;
+                newArrivalsContainer.innerHTML += card;
 
-        container.innerHTML += `
-            <div class="product" data-category="${data.category}">
+            }
 
-                <div class="badge">
-                    🔥 HOT DEAL
-                </div>
-                
-                <div class="discount">
-                    -30%
-                </div>
-                <div class="wishlist">
-                    ❤️
-                </div>
-                <div class="favorite">♡</div>
+        }
 
-                <a href="product.html?id=${product.id}">
-                    <img src="${data.image}" alt="${data.title}">
-                </a>
+        // Main Products
+        if (productsContainer) {
 
-                <h2>${data.title}</h2>
+            productsContainer.innerHTML += card;
 
-                <div class="rating">
-
-                    ⭐ ${data.rating || 0}
-
-                    <span>
-                        (${data.reviews || 0} Reviews)
-                    </span>
-
-                </div>
-                
-                <p class="price">$${data.price}</p>
-
-                <p class="shipping">
-
-                🚚 Free Shipping
-
-                </p>
-
-                <a href="${data.link}" target="_blank" class="buy-btn">
-
-                🔥 Get Best Price
-
-                </a>
-
-            </div>
-        `;
-
-    });
-
-    
-
-    activateCategoryFilter();
-
-
-}
-
-loadProducts();
-// Search
-
-const searchInput = document.getElementById("searchInput");
-
-searchInput.addEventListener("keyup", () => {
-
-    const value = searchInput.value.toLowerCase();
-
-    document.querySelectorAll(".product").forEach(product => {
-
-        const title = product.querySelector("h2").textContent.toLowerCase();
-
-        if (title.includes(value)) {
-            product.style.display = "block";
-        } else {
-            product.style.display = "none";
         }
 
     });
 
-});
-
-// ======================
-// Featured Products
-// ======================
-
-async function loadFeaturedProducts() {
-
-    const featuredContainer = document.getElementById("featuredProducts");
-
-    if (!featuredContainer) return;
-
-    featuredContainer.innerHTML = "";
-
-    const snapshot = await getDocs(collection(db, "products"));
-
-    snapshot.forEach((product) => {
-
-        const data = product.data();
-
-        if (!data.featured) return;
-
-        featuredContainer.innerHTML += `
-
-        <div class="product">
-
-            <span class="favorite">⭐</span>
-
-            <img src="${data.image}" alt="${data.title}">
-
-            <h2>${data.title}</h2>
-
-            <p>$${data.price}</p>
-
-            <a href="${data.link}" target="_blank" class="buy-btn">
-                Buy Now
-            </a>
-
-        </div>
-
-        `;
-
-    });
+    activateCategoryFilter();
 
 }
 
 // ======================
-// Best Deals
+// Search
 // ======================
 
-async function loadBestDeals() {
+if (searchInput) {
 
-    const bestDeals = document.getElementById("bestDeals");
+    searchInput.addEventListener("keyup", () => {
 
-    if (!bestDeals) return;
+        const value = searchInput.value.toLowerCase().trim();
 
-    bestDeals.innerHTML = "";
+        document.querySelectorAll(".product").forEach((product) => {
 
-    const snapshot = await getDocs(collection(db, "products"));
+            const title = product.querySelector("h2").textContent.toLowerCase();
 
-    snapshot.forEach((product) => {
+            if (title.includes(value)) {
 
-        const data = product.data();
+                product.style.display = "block";
 
-        if (!data.bestDeal) return;
+            } else {
 
-        bestDeals.innerHTML += `
+                product.style.display = "none";
 
-        <div class="product">
+            }
 
-            <img src="${data.image}" alt="${data.title}">
-
-            <h2>${data.title}</h2>
-
-            <p>$${data.price}</p>
-
-            <a href="${data.link}" target="_blank" class="buy-btn">
-
-                🔥 Get Best Price
-
-            </a>
-
-        </div>
-
-        `;
+        });
 
     });
 
+    
 }
 
 // ======================
-// New Arrivals
-// ======================
-
-async function loadNewArrivals() {
-
-    const newArrivals = document.getElementById("newArrivals");
-
-    if (!newArrivals) return;
-
-    newArrivals.innerHTML = "";
-
-    const snapshot = await getDocs(collection(db, "products"));
-
-    snapshot.forEach((product) => {
-
-        const data = product.data();
-
-
-        if (!data.newArrival) return;
-
-        newArrivals.innerHTML += `
-
-        <div class="product">
-
-            <img src="${data.image}" alt="${data.title}">
-
-            <h2>${data.title}</h2>
-
-            <p>$${data.price}</p>
-
-            <a href="${data.link}" target="_blank" class="buy-btn">
-
-                🛒 Shop Now
-
-            </a>
-
-        </div>
-
-        `;
-
-    });
-
-
-}
-
 // Category Filter
+// ======================
 
 function activateCategoryFilter() {
 
     const filters = document.querySelectorAll(".menu a");
 
-    filters.forEach(filter => {
+    filters.forEach((filter) => {
 
         filter.onclick = (e) => {
 
@@ -260,7 +226,7 @@ function activateCategoryFilter() {
 
             const category = filter.dataset.filter;
 
-            document.querySelectorAll(".product").forEach(product => {
+            document.querySelectorAll("#products .product").forEach((product) => {
 
                 if (
                     category === "all" ||
@@ -339,8 +305,8 @@ if (nextBtn && prevBtn && slides.length > 0) {
 
 }
 
-loadFeaturedProducts();
+// ======================
+// Init
+// ======================
 
-loadBestDeals();
-
-loadNewArrivals();
+loadAllProducts();
