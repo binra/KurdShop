@@ -210,7 +210,6 @@ async function loadNewArrivals() {
 
         const data = product.data();
 
-        console.log(data.title, data.newArrival);
 
         if (!data.newArrival) return;
 
@@ -331,6 +330,9 @@ if (nextBtn && prevBtn && slides.length > 0) {
 
 }
 
+loadProducts();
+
+loadFeaturedProducts();
 
 loadBestDeals();
 
