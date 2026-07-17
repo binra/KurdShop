@@ -16,6 +16,12 @@ const newArrivalsContainer = document.getElementById("newArrivals");
 
 const searchInput = document.getElementById("searchInput");
 const sortProducts = document.getElementById("sortProducts");
+const prevPageBtn = document.getElementById("prevPage");
+const nextPageBtn = document.getElementById("nextPage");
+const pageNumber = document.getElementById("pageNumber");
+
+let currentPage = 1;
+const productsPerPage = 12;
 
 // ======================
 // Product Card
@@ -160,8 +166,12 @@ async function loadAllProducts() {
         }
 
     }
+    const start = (currentPage - 1) * productsPerPage;
+    const end = start + productsPerPage;
 
-    products.forEach((data) => {
+    const pageProducts = products.slice(start, end);
+
+    pageProducts.forEach((data) => {
 
         const card = productCard(data.id, data);
 
@@ -403,6 +413,46 @@ if (sortProducts) {
     sortProducts.addEventListener("change", () => {
 
         loadAllProducts();
+
+    });
+
+}
+if (nextPageBtn) {
+
+    nextPageBtn.addEventListener("click", async () => {
+
+        const snapshot = await getDocs(collection(db, "products"));
+
+        const totalProducts = snapshot.size;
+        const totalPages = Math.ceil(totalProducts / productsPerPage);
+
+        if (currentPage < totalPages) {
+
+            currentPage++;
+
+            pageNumber.textContent = currentPage;
+
+            loadAllProducts();
+
+        }
+
+    });
+
+}
+
+if (prevPageBtn) {
+
+    prevPageBtn.addEventListener("click", () => {
+
+        if (currentPage > 1) {
+
+            currentPage--;
+
+            pageNumber.textContent = currentPage;
+
+            loadAllProducts();
+
+        }
 
     });
 
