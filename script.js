@@ -20,7 +20,7 @@ const prevPageBtn = document.getElementById("prevPage");
 const nextPageBtn = document.getElementById("nextPage");
 const pageNumber = document.getElementById("pageNumber");
 
-let currentPage = 1;
+let currentPage = 3;
 const productsPerPage = 2;
 
 // ======================
