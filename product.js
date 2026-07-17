@@ -2,7 +2,9 @@ import { db } from "./firebase.js";
 
 import {
     doc,
-    getDoc
+    getDoc,
+    collection,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const params = new URLSearchParams(window.location.search);
@@ -10,6 +12,7 @@ const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
 const container = document.getElementById("productDetails");
+const relatedLimit = 4;
 
 async function loadProduct() {
 
@@ -28,7 +31,27 @@ async function loadProduct() {
 
     const data = { ...productSnap.data() };
 
-    
+    const snapshot = await getDocs(collection(db, "products"));
+
+    let relatedProducts = [];
+
+    snapshot.forEach((item) => {
+
+        if (
+            item.id !== id &&
+            item.data().category === data.category
+        ) {
+
+            relatedProducts.push({
+                id: item.id,
+                ...item.data()
+            });
+
+        }
+
+    });
+
+    relatedProducts = relatedProducts.slice(0, relatedLimit);
 
     container.innerHTML = `
         <div class="product-details">
@@ -75,6 +98,40 @@ async function loadProduct() {
                 <a href="index.html">
                     ← Back to Home
                 </a>
+
+            </div>
+
+        </div>
+
+        <div class="related-section">
+
+            <h2>You may also like</h2>
+
+            <div class="products">
+
+                ${relatedProducts.map(product => `
+
+                    <div class="product">
+
+                        <a href="product.html?id=${product.id}">
+
+                            <img src="${product.image}" alt="${product.title}">
+
+                            <h3>${product.title}</h3>
+
+                        </a>
+
+                        <p>$${product.price}</p>
+
+                        <a href="${product.link}" target="_blank" class="buy-btn">
+
+                            Get Best Price
+
+                        </a>
+
+                    </div>
+
+                `).join("")}
 
             </div>
 
