@@ -31,6 +31,24 @@ async function loadProduct() {
 
     const data = { ...productSnap.data() };
 
+    let viewed = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+    // Remove if already exists
+    viewed = viewed.filter(item => item.id !== id);
+
+    // Add current product to beginning
+    viewed.unshift({
+        id,
+        ...data
+    });
+
+    // Keep only last 8 products
+    viewed = viewed.slice(0, 8);
+
+    localStorage.setItem(
+        "recentlyViewed",
+        JSON.stringify(viewed)
+    );
     const snapshot = await getDocs(collection(db, "products"));
 
     let relatedProducts = [];

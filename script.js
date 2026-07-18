@@ -220,6 +220,7 @@ async function loadAllProducts() {
 
     activateCategoryFilter();
 
+    loadRecentlyViewed();
 
 }
 
@@ -400,7 +401,24 @@ function updateWishlistCount() {
     count.textContent = wishlist.length;
 
 }
+function loadRecentlyViewed() {
 
+    const container = document.getElementById("recentlyViewedProducts");
+
+    if (!container) return;
+
+    const viewed =
+        JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+
+    container.innerHTML = "";
+
+    viewed.forEach(data => {
+
+        container.innerHTML += productCard(data.id, data);
+
+    });
+
+}
 // ======================
 // Init
 // ======================
