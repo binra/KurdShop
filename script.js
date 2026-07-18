@@ -543,3 +543,27 @@ if (prevPageBtn) {
     });
 
 }
+const moreBtn = document.getElementById("moreBtn");
+const dropdown = document.querySelector(".dropdown-content");
+
+if (moreBtn && dropdown) {
+
+    moreBtn.addEventListener("click", (e) => {
+
+        e.stopPropagation();
+
+        dropdown.classList.toggle("show");
+
+    });
+
+    document.addEventListener("click", (e) => {
+
+        if (!dropdown.contains(e.target) && e.target !== moreBtn) {
+
+            dropdown.classList.remove("show");
+
+        }
+
+    });
+
+}

@@ -692,3 +692,89 @@ header{
     }
 
 }
+
+/* =========================
+   Dropdown Menu
+========================= */
+
+.menu{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.menu a,
+.dropbtn{
+    color:#fff;
+    text-decoration:none;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.menu a:hover,
+.dropbtn:hover{
+    color:#f5b400;
+}
+
+.dropdown{
+    position:relative;
+}
+
+.dropdown-content{
+    display:none;
+    position:absolute;
+    top:45px;
+    right:0;
+    min-width:240px;
+    background:#111;
+    border:1px solid rgba(255,215,0,.25);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 15px 40px rgba(0,0,0,.45);
+    z-index:999;
+}
+
+.dropdown-content a{
+    display:block;
+    padding:14px 18px;
+    color:#fff;
+    text-decoration:none;
+    transition:.3s;
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.dropdown-content a:last-child{
+    border-bottom:none;
+}
+
+.dropdown-content a:hover{
+    background:#f5b400;
+    color:#000;
+    padding-left:26px;
+}
+
+.dropdown-content.show{
+
+    display:block;
+
+    animation:dropdownFade .25s ease;
+
+}
+
+@keyframes dropdownFade{
+
+    from{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
