@@ -17,6 +17,7 @@ const featuredContainer = document.getElementById("featuredProducts");
 const bestDealsContainer = document.getElementById("bestDeals");
 const newArrivalsContainer = document.getElementById("newArrivals");
 const trendingContainer = document.getElementById("trendingProducts");
+const popularContainer = document.getElementById("popularProducts");
 
 const searchInput = document.getElementById("searchInput");
 const sortProducts = document.getElementById("sortProducts");
@@ -174,6 +175,10 @@ async function loadAllProducts() {
 
     });
 
+    const popularProducts = [...products]
+        .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
+        .slice(0, 8);
+
     if (sortProducts) {
 
         switch (sortProducts.value) {
@@ -201,6 +206,18 @@ async function loadAllProducts() {
     const end = start + productsPerPage;
 
     const pageProducts = products.slice(start, end);
+
+    if (popularContainer) {
+
+        popularContainer.innerHTML = "";
+
+        popularProducts.forEach((item) => {
+
+            popularContainer.innerHTML += productCard(item.id, item);
+
+        });
+
+    }
 
     pageProducts.forEach((data) => {
 
