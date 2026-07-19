@@ -329,11 +329,11 @@ if (searchInput) {
 
 function activateCategoryFilter() {
 
-    const filters = document.querySelectorAll(".menu a");
+    const filters = document.querySelectorAll(".menu a, .dropdown-content a");
 
     filters.forEach((filter) => {
 
-        filter.onclick = (e) => {
+        filter.addEventListener("click", (e) => {
 
             e.preventDefault();
 
@@ -356,7 +356,15 @@ function activateCategoryFilter() {
 
             });
 
-        };
+            const dropdown = document.querySelector(".dropdown-content");
+
+            if (dropdown) {
+
+                dropdown.classList.remove("show");
+
+            }
+
+        });
 
     });
 
