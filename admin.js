@@ -134,17 +134,40 @@ categoryForm.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
-    await addDoc(collection(db, "categories"), {
+    if (editingCategoryId) {
 
-        name: categoryName.value.trim(),
+        await updateDoc(
+            doc(db, "categories", editingCategoryId),
+            {
+                name: categoryName.value.trim(),
+                icon: categoryIcon.value.trim()
+            }
+        );
 
-        icon: categoryIcon.value.trim(),
+        editingCategoryId = null;
 
-        active: true,
+        categoryForm.querySelector("button").textContent =
+            "Add Category";
 
-        order: Date.now()
+        alert("Category Updated ✅");
 
-    });
+    } else {
+
+        await addDoc(collection(db, "categories"), {
+
+            name: categoryName.value.trim(),
+
+            icon: categoryIcon.value.trim(),
+
+            active: true,
+
+            order: Date.now()
+
+        });
+
+        alert("Category Added ✅");
+
+    }
 
     categoryForm.reset();
 
@@ -192,12 +215,12 @@ async function loadProducts() {
 
             <p>$${data.price}</p>
 
-            <button class="edit-btn"
+            <button type="button" class="edit-btn"
                 data-id="${productDoc.id}">
                 Edit
             </button>
 
-            <button class="delete-btn"
+            <button type="button" class="delete-btn"
                 data-id="${productDoc.id}">
                 Delete
             </button>
@@ -287,12 +310,14 @@ async function loadCategoryManager() {
             <h3>${data.icon} ${data.name}</h3>
 
             <button
+                type="button"
                 class="edit-category"
                 data-id="${categoryDoc.id}">
                 Edit
             </button>
 
             <button
+                type="button"
                 class="delete-category"
                 data-id="${categoryDoc.id}">
                 Delete
@@ -304,30 +329,54 @@ async function loadCategoryManager() {
 
     });
 
+    // Edit Category
+    document.querySelectorAll(".edit-category").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            editingCategoryId = btn.dataset.id;
+
+            const snap = await getDoc(
+                doc(db, "categories", editingCategoryId)
+            );
+
+            const data = snap.data();
+
+            categoryName.value = data.name;
+
+            categoryIcon.value = data.icon;
+
+            categoryForm.querySelector("button").textContent =
+                "Update Category";
+
+            categoryForm.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        };
+
+    });
+
+    // Delete Category
+    document.querySelectorAll(".delete-category").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            if (!confirm("Delete Category?")) return;
+
+            await deleteDoc(
+                doc(db, "categories", btn.dataset.id)
+            );
+
+            loadCategories();
+
+            loadCategoryManager();
+
+        };
+
+    });
+
 }
-
-document.querySelectorAll(".edit-category").forEach(btn => {
-
-    btn.onclick = async () => {
-
-        editingCategoryId = btn.dataset.id;
-
-        const snap = await getDoc(
-            doc(db, "categories", editingCategoryId)
-        );
-
-        const data = snap.data();
-
-        categoryName.value = data.name;
-
-        categoryIcon.value = data.icon;
-
-        categoryForm.querySelector("button").textContent =
-            "Update Category";
-
-    };
-
-});
 
 loadProducts();
 loadCategories();
