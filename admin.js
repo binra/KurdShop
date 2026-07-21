@@ -528,7 +528,7 @@ async function loadBannerManager() {
 
     document.querySelectorAll(".delete-banner").forEach(btn => {
 
-        btn.onclick = async () => {
+        btn.addEventListener("click", async () => {
 
             if (!confirm("Delete Banner?")) return;
 
@@ -536,9 +536,11 @@ async function loadBannerManager() {
                 doc(db, "banners", btn.dataset.id)
             );
 
+            alert("Banner Deleted ✅");
+
             loadBannerManager();
-            
-        };
+
+        });
 
     });
 
