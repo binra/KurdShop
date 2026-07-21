@@ -7,112 +7,56 @@ import {
   deleteDoc,
   updateDoc,
   doc,
-  getDoc,
-  serverTimestamp
+  getDoc
 
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
+  signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-// ========================
-// Login Logic
-// ========================
+// Login
+const email = prompt("Admin Email");
+const password = prompt("Admin Password");
 
-const loginContainer = document.getElementById("loginContainer");
-const adminPanel = document.getElementById("adminPanel");
-const loginEmail = document.getElementById("loginEmail");
-const loginPassword = document.getElementById("loginPassword");
-const loginMessage = document.getElementById("loginMessage");
+await signInWithEmailAndPassword(auth, email, password);
 
-async function handleLogin() {
-
-    const email = loginEmail.value.trim();
-    const password = loginPassword.value.trim();
-
-    if (!email || !password) {
-        loginMessage.innerHTML = '<div class="login-error">Please enter email and password</div>';
-        return;
-    }
-
-    loginMessage.innerHTML = '<div class="login-loading">Logging in...</div>';
-
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        loginMessage.innerHTML = '';
-        showAdminPanel();
-    } catch (error) {
-
-        loginMessage.innerHTML = `<div class="login-error">Login failed: ${error.message}</div>`;
-
-        // Log failed login attempt
-        try {
-            await addDoc(collection(db, "failed_login_attempts"), {
-                email: email,
-                timestamp: serverTimestamp(),
-                errorCode: error.code,
-                ipAddress: "Unknown" // Note: IP address detection requires backend
-            });
-        } catch (logError) {
-            console.error("Error logging failed attempt:", logError);
-        }
-
-    }
-
-}
-
-function handleLogout() {
-
-    if (confirm("Are you sure you want to logout?")) {
-
-        signOut(auth)
-            .then(() => {
-                loginEmail.value = "";
-                loginPassword.value = "";
-                showLoginForm();
-            })
-            .catch(error => {
-                alert("Logout failed: " + error.message);
-            });
-
-    }
-
-}
-
-function showLoginForm() {
-    loginContainer.style.display = "flex";
-    adminPanel.style.display = "none";
-}
-
-function showAdminPanel() {
-    loginContainer.style.display = "none";
-    adminPanel.style.display = "block";
-    initializeAdminPanel();
-}
-
-// Check authentication on page load
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        showAdminPanel();
-    } else {
-        showLoginForm();
-    }
-});
-
-// ========================
-// Admin Panel Logic
-// ========================
-
+// Elements
 const form = document.getElementById("productForm");
+const categorySelect = document.getElementById("category");
+
+async function loadCategories() {
+
+    categorySelect.innerHTML =
+        `<option value="">Select Category</option>`;
+
+    const snapshot = await getDocs(collection(db, "categories"));
+
+    snapshot.forEach((doc) => {
+
+        const data = doc.data();
+
+        categorySelect.innerHTML += `
+        <option value="${data.name}">
+            ${data.icon} ${data.name}
+        </option>
+        `;
+
+    });
+
+}
+
+
 const title = document.getElementById("title");
+
 const price = document.getElementById("price");
-const originalPrice = document.getElementById("originalPrice");
+
 const image = document.getElementById("image");
+
 const category = document.getElementById("category");
+
 const link = document.getElementById("link");
+
 const description = document.getElementById("description");
 
 const rating = document.getElementById("rating");
@@ -133,253 +77,475 @@ const categoryIcon = document.getElementById("categoryIcon");
 
 const categoryList = document.getElementById("categoryList");
 
+const bannerForm =
+    document.getElementById("bannerForm");
 
+const bannerTitle =
+    document.getElementById("bannerTitle");
+
+const bannerImage =
+    document.getElementById("bannerImage");
+
+const bannerLink =
+    document.getElementById("bannerLink");
+
+const bannerList =
+    document.getElementById("bannerList");
 
 let editingId = null;
 let editingCategoryId = null;
+let editingBannerId = null;
 
-function initializeAdminPanel() {
+// Save Product
+form.addEventListener("submit", async (e) => {
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        const product = {
-            title: title.value.trim(),
-            price: Number(price.value),
-            originalPrice: originalPrice.value ? Number(originalPrice.value) : null,
-            image: image.value.trim(),
-            category: category.value.trim(),
-            link: link.value.trim(),
-            description: description.value.trim(),
-            rating: Number(rating.value) || 0,
-            reviews: Number(reviews.value) || 0,
-            featured: featured.checked,
-            bestDeal: bestDeal.checked,
-            newArrival: newArrival.checked,
-            bestSeller: bestSeller.checked
-        };
+    const product = {
+        title: title.value.trim(),
+        price: Number(price.value),
+        image: image.value.trim(),
+        category: category.value.trim(),
+        link: link.value.trim(),
+        description: description.value.trim(),
+        rating: Number(rating.value) || 0,
 
-        try {
+        reviews: Number(reviews.value) || 0,
 
-            if (editingId) {
+        featured: featured.checked,
 
-                await updateDoc(
-                    doc(db, "products", editingId),
-                    product
-                );
+        bestDeal: bestDeal.checked,
+        newArrival: newArrival.checked,
+        bestSeller: bestSeller.checked
+    };
 
-                alert("Updated ✅");
-                editingId = null;
 
-            } else {
 
-                await addDoc(
-                    collection(db, "products"),
-                    product
-                );
+    if (editingId) {
 
-                alert("Added ✅");
+        await updateDoc(
+            doc(db, "products", editingId),
+            product
+        );
 
-            }
+    
 
-            form.reset();
-            loadProducts();
+        alert("Updated ✅");
 
-        } catch (error) {
+        editingId = null;
 
-            alert("Error saving product: " + error.message);
+    } else {
 
-        }
+        await addDoc(
+            collection(db, "products"),
+            product
+        );
 
-    });
+        alert("Added ✅");
 
-    categoryForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    }
 
-        try {
-
-            if (editingCategoryId) {
-
-                await updateDoc(
-                    doc(db, "categories", editingCategoryId),
-                    {
-                        name: categoryName.value.trim(),
-                        icon: categoryIcon.value.trim()
-                    }
-                );
-
-                editingCategoryId = null;
-                categoryForm.querySelector("button").textContent = "Add Category";
-                alert("Category Updated ✅");
-
-            } else {
-
-                await addDoc(collection(db, "categories"), {
-                    name: categoryName.value.trim(),
-                    icon: categoryIcon.value.trim(),
-                    active: true,
-                    order: Date.now()
-                });
-
-                alert("Category Added ✅");
-
-            }
-
-            categoryForm.reset();
-            loadCategoryManager();
-
-        } catch (error) {
-
-            alert("Error saving category: " + error.message);
-
-        }
-
-    });
+    form.reset();
 
     loadProducts();
+
+});
+
+categoryForm.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    if (editingCategoryId) {
+
+        await updateDoc(
+            doc(db, "categories", editingCategoryId),
+            {
+                name: categoryName.value.trim(),
+                icon: categoryIcon.value.trim()
+            }
+        );
+
+        editingCategoryId = null;
+
+        categoryForm.querySelector("button").textContent =
+            "Add Category";
+
+        alert("Category Updated ✅");
+
+    } else {
+
+        await addDoc(collection(db, "categories"), {
+
+            name: categoryName.value.trim(),
+
+            icon: categoryIcon.value.trim(),
+
+            active: true,
+
+            order: Date.now()
+
+        });
+
+        alert("Category Added ✅");
+
+    }
+
+    categoryForm.reset();
+
+    loadCategories();
+
     loadCategoryManager();
+
+});
+
+bannerForm.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    if (editingBannerId) {
+
+    await updateDoc(
+
+        doc(db, "banners", editingBannerId),
+
+        {
+
+            title: bannerTitle.value.trim(),
+
+            image: bannerImage.value.trim(),
+
+            link: bannerLink.value.trim()
+
+        }
+
+    );
+
+    editingBannerId = null;
+
+    bannerForm.querySelector("button").textContent =
+        "Add Banner";
+
+    alert("Banner Updated ✅");
+
+} else {
+
+    await addDoc(collection(db, "banners"), {
+
+        title: bannerTitle.value.trim(),
+
+        image: bannerImage.value.trim(),
+
+        link: bannerLink.value.trim(),
+
+        active: true,
+
+        order: Date.now()
+
+    });
+
+    alert("Banner Added ✅");
 
 }
 
+    bannerForm.reset();
+
+    editingBannerId = null;
+
+    bannerForm.querySelector("button").textContent =
+        "Add Banner";
+
+    loadBannerManager();
+
+});
+
+// Load Products
 async function loadProducts() {
 
     adminProducts.innerHTML = "";
+    const snapshot = await getDocs(collection(db, "products"));
 
-    try {
+    let total = 0;
+    let featuredCount = 0;
+    let dealsCount = 0;
+    let sellerCount = 0;
 
-        const snapshot = await getDocs(collection(db, "products"));
+    snapshot.forEach((productDoc) => {
 
-        snapshot.forEach((productDoc) => {
+        const data = productDoc.data();
 
-            const data = productDoc.data();
+        total++;
 
-            adminProducts.innerHTML += `
-            <div class="product">
-            ${data.bestSeller ? `<div class="badge">🏆 Best Seller</div>` : ""}
-                <img src="${data.image}" alt="">
-                <h3>${data.title}</h3>
-                <p>$${data.price}</p>
+        if(data.featured) featuredCount++;
 
-                <button type="button" class="edit-btn" data-id="${productDoc.id}">
-                    Edit
-                </button>
+        if(data.bestDeal) dealsCount++;
 
-                <button type="button" class="delete-btn" data-id="${productDoc.id}">
-                    Delete
-                </button>
-            </div>
-            `;
+        if(data.bestSeller) sellerCount++;
 
-        });
+        adminProducts.innerHTML += `
+        <div class="product">
 
-        // Delete & Edit handlers
-        document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.onclick = async () => {
-                if (!confirm("Delete Product?")) return;
-                try {
-                    await deleteDoc(doc(db, "products", btn.dataset.id));
-                    loadProducts();
-                } catch (error) {
-                    alert("Error deleting product: " + error.message);
-                }
-            };
-        });
+        ${data.bestSeller ? `
+        <div class="badge">
+        🏆 Best Seller
+        </div>
+        ` : ""}
+            <img src="${data.image}" alt="">
 
-        document.querySelectorAll(".edit-btn").forEach(btn => {
-            btn.onclick = async () => {
-                editingId = btn.dataset.id;
-                try {
-                    const snap = await getDoc(doc(db, "products", editingId));
-                    const data = snap.data();
-                    title.value = data.title || "";
-                    price.value = data.price || "";
-                    originalPrice.value = data.originalPrice || "";
-                    image.value = data.image || "";
-                    category.value = data.category || "";
-                    link.value = data.link || "";
-                    description.value = data.description || "";
-                    rating.value = data.rating || "";
-                    reviews.value = data.reviews || "";
-                    featured.checked = data.featured || false;
-                    bestDeal.checked = data.bestDeal || false;
-                    newArrival.checked = data.newArrival || false;
-                    bestSeller.checked = data.bestSeller || false;
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                } catch (error) {
-                    alert("Error loading product: " + error.message);
-                }
-            };
-        });
+            <h3>${data.title}</h3>
 
-    } catch (error) {
+            <p>$${data.price}</p>
 
-        adminProducts.innerHTML = `<p>Error loading products: ${error.message}</p>`;
+            <button type="button" class="edit-btn"
+                data-id="${productDoc.id}">
+                Edit
+            </button>
 
-    }
+            <button type="button" class="delete-btn"
+                data-id="${productDoc.id}">
+                Delete
+            </button>
+
+        </div>
+        `;
+
+    });
+
+    document.getElementById("totalProducts").textContent = total;
+
+    document.getElementById("featuredProducts").textContent = featuredCount;
+
+    document.getElementById("bestDeals").textContent = dealsCount;
+
+    document.getElementById("bestSellers").textContent = sellerCount;
+
+    // Delete
+    document.querySelectorAll(".delete-btn").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            if (!confirm("Delete Product?")) return;
+
+            await deleteDoc(
+                doc(db, "products", btn.dataset.id)
+            );
+
+            loadProducts();
+
+        };
+
+    });
+
+    // Edit
+    document.querySelectorAll(".edit-btn").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            editingId = btn.dataset.id;
+
+            const snap = await getDoc(
+                doc(db, "products", editingId)
+            );
+
+            const data = snap.data();
+
+            title.value = data.title || "";
+            price.value = data.price || "";
+            image.value = data.image || "";
+            category.value = data.category || "";
+            link.value = data.link || "";
+            description.value = data.description || "";
+
+            rating.value = data.rating || "";
+            reviews.value = data.reviews || "";
+            featured.checked = data.featured || false;
+            bestDeal.checked = data.bestDeal || false;
+            newArrival.checked = data.newArrival || false;
+            bestSeller.checked = data.bestSeller || false;
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        };
+
+    });
 
 }
 
 async function loadCategoryManager() {
 
     categoryList.innerHTML = "";
+    const snapshot = await getDocs(collection(db, "categories"));
 
-    try {
+    snapshot.forEach((categoryDoc) => {
 
-        const snapshot = await getDocs(collection(db, "categories"));
+        const data = categoryDoc.data();
 
-        snapshot.forEach((categoryDoc) => {
+        categoryList.innerHTML += `
 
-            const data = categoryDoc.data();
+        <div class="product">
 
-            categoryList.innerHTML += `
-            <div class="product">
-                <h3>${data.icon} ${data.name}</h3>
+            <h3>${data.icon} ${data.name}</h3>
 
-                <button type="button" class="edit-category" data-id="${categoryDoc.id}">
-                    Edit
-                </button>
+            <button
+                type="button"
+                class="edit-category"
+                data-id="${categoryDoc.id}">
+                Edit
+            </button>
 
-                <button type="button" class="delete-category" data-id="${categoryDoc.id}">
-                    Delete
-                </button>
-            </div>
-            `;
+            <button
+                type="button"
+                class="delete-category"
+                data-id="${categoryDoc.id}">
+                Delete
+            </button>
+
+        </div>
+
+        `;
+
+    });   
+
+
+
+    // Edit Category
+    document.querySelectorAll(".edit-category").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            editingCategoryId = btn.dataset.id;
+
+            const snap = await getDoc(
+                doc(db, "categories", editingCategoryId)
+            );
+
+            const data = snap.data();
+
+            categoryName.value = data.name;
+
+            categoryIcon.value = data.icon;
+
+            categoryForm.querySelector("button").textContent =
+                "Update Category";
+
+            categoryForm.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        };
+
+    });
+
+    // Delete Category
+    document.querySelectorAll(".delete-category").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            if (!confirm("Delete Category?")) return;
+
+            await deleteDoc(
+                doc(db, "categories", btn.dataset.id)
+            );
+
+            loadCategories();
+
+            loadCategoryManager();
+
+        };
+
+    });
+
+}
+
+async function loadBannerManager() {
+
+    if (!bannerList) return;
+
+    bannerList.innerHTML = "";
+
+    const snapshot = await getDocs(collection(db, "banners"));
+
+    snapshot.forEach((bannerDoc) => {
+
+        const data = bannerDoc.data();
+
+        bannerList.innerHTML += `
+
+<div class="product">
+
+    <img src="${data.image}" style="width:100%;max-width:250px;">
+
+    <h3>${data.title}</h3>
+
+    <p>${data.link}</p>
+
+    <button
+        type="button"
+        class="edit-banner"
+        data-id="${bannerDoc.id}">
+        Edit
+    </button>
+
+    <button
+        type="button"
+        class="delete-banner"
+        data-id="${bannerDoc.id}">
+        Delete
+    </button>
+
+</div>
+
+`;
+
+    });
+
+    document.querySelectorAll(".edit-banner").forEach(btn => {
+
+        btn.onclick = async () => {
+
+            editingBannerId = btn.dataset.id;
+
+            const snap = await getDoc(
+            doc(db, "banners", editingBannerId)
+            );
+
+            const data = snap.data();
+
+            bannerTitle.value = data.title;
+            bannerImage.value = data.image;
+            bannerLink.value = data.link;
+
+            bannerForm.querySelector("button").textContent =
+                "Update Banner";
+
+            bannerForm.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        };
+    });    
+    
+
+
+    document.querySelectorAll(".delete-banner").forEach(btn => {
+
+        btn.addEventListener("click", async () => {
+
+            if (!confirm("Delete Banner?")) return;
+
+            await deleteDoc(
+                doc(db, "banners", btn.dataset.id)
+            );
+
+            alert("Banner Deleted ✅");
+
+            loadBannerManager();
 
         });
 
-        document.querySelectorAll(".edit-category").forEach(btn => {
-            btn.onclick = async () => {
-                editingCategoryId = btn.dataset.id;
-                try {
-                    const snap = await getDoc(doc(db, "categories", editingCategoryId));
-                    const data = snap.data();
-                    categoryName.value = data.name;
-                    categoryIcon.value = data.icon;
-                    categoryForm.querySelector("button").textContent = "Update Category";
-                    categoryForm.scrollIntoView({ behavior: "smooth" });
-                } catch (error) {
-                    alert("Error loading category: " + error.message);
-                }
-            };
-        });
-
-        document.querySelectorAll(".delete-category").forEach(btn => {
-            btn.onclick = async () => {
-                if (!confirm("Delete Category?")) return;
-                try {
-                    await deleteDoc(doc(db, "categories", btn.dataset.id));
-                    loadCategoryManager();
-                } catch (error) {
-                    alert("Error deleting category: " + error.message);
-                }
-            };
-        });
-
-    } catch (error) {
-
-        categoryList.innerHTML = `<p>Error loading categories: ${error.message}</p>`;
-
-    }
+    });
 
 }
 
