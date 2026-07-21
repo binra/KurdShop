@@ -369,7 +369,8 @@ async function loadCategoryManager() {
     });
 
 async function loadBannerManager() {
-    
+
+    if (!bannerList) return;
 
     bannerList.innerHTML = "";
 
@@ -381,31 +382,17 @@ async function loadBannerManager() {
 
         bannerList.innerHTML += `
 
-<div class="product">
+        <div class="product">
 
-    <img src="${data.image}" width="200">
+            <img src="${data.image}" style="width:100%;max-width:250px;">
 
-    <h3>${data.title}</h3>
+            <h3>${data.title}</h3>
 
-    <a href="${data.link}" target="_blank">
-        ${data.link}
-    </a>
+            <p>${data.link}</p>
 
-    <br><br>
+        </div>
 
-    <button class="edit-banner"
-        data-id="${bannerDoc.id}">
-        Edit
-    </button>
-
-    <button class="delete-banner"
-        data-id="${bannerDoc.id}">
-        Delete
-    </button>
-
-</div>
-
-`;
+        `;
 
     });
 
