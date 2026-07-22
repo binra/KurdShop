@@ -37,7 +37,7 @@ onAuthStateChanged(auth, (user) => {
 
 });
 
-await signInWithEmailAndPassword(auth, email, password);
+
 
 // Elements
 const form = document.getElementById("productForm");
