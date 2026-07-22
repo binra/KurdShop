@@ -12,12 +12,30 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 import {
-  signInWithEmailAndPassword
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-// Login
-const email = prompt("Admin Email");
-const password = prompt("Admin Password");
+const ADMIN_EMAIL = "benar4700@gmail.com";
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+
+        window.location.href = "login.html";
+        return;
+
+    }
+
+    if (user.email !== ADMIN_EMAIL) {
+
+        auth.signOut();
+
+        window.location.href = "login.html";
+        return;
+
+    }
+
+});
 
 await signInWithEmailAndPassword(auth, email, password);
 
