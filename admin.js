@@ -122,6 +122,33 @@ form.addEventListener("submit", async (e) => {
 
     e.preventDefault();
 
+    if (
+        !title.value.trim() ||
+        !price.value ||
+        !image.value.trim() ||
+        !category.value ||
+        !link.value.trim()
+    ) {
+        alert("Please fill in all required fields.");
+        return;
+    }
+
+    if (Number(price.value) <= 0) {
+        alert("Price must be greater than 0.");
+        return;
+    }
+
+    try {
+        new URL(link.value);
+    } catch {
+        alert("Please enter a valid product link.");
+        return;
+    }
+
+    const submitBtn = form.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Saving...";
+
     const product = {
         title: title.value.trim(),
         price: Number(price.value),
@@ -169,6 +196,9 @@ form.addEventListener("submit", async (e) => {
     }
 
     form.reset();
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Save Product";
 
     loadProducts();
 
